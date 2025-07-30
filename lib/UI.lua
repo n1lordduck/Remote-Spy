@@ -4,11 +4,11 @@ local t=game:GetService("TweenService")
 local r=game:GetService("RunService")
 local c=game:GetService("CoreGui")
 
-local m={}
-m.__index=m
+local MacUI={}
+MacUI.__index=MacUI
 
-local w={}
-w.__index=w
+local WindowClass={}
+WindowClass.__index=WindowClass
 
 local function applySyntaxHighlighting(text)
     local keywords={"and","break","do","else","elseif","end","false","for","function","if","in","local","nil","not","or","repeat","return","then","true","until","while","export","type","typeof","continue"}
@@ -78,24 +78,26 @@ local function applySyntaxHighlighting(text)
     return result
 end
 
--- FIX: Add CreateWindow to the main module 'm'
-function m:CreateWindow(cfg)
-    local self=setmetatable({},w)
-    self.EventClicked=Instance.new("BindableEvent")
-    self.WindowClosed=Instance.new("BindableEvent")
-    self.Events={}
-    self.EventGroups={}
-    self.Buttons={}
+function MacUI:CreateWindow(cfg)
+    local window=setmetatable({},WindowClass)
+    window.EventClicked=Instance.new("BindableEvent")
+    window.WindowClosed=Instance.new("BindableEvent")
+    window.Events={}
+    window.EventGroups={}
+    window.Buttons={}
+    
     local s=Instance.new("ScreenGui")
     s.Name="MacUI_"..tick()
     s.Parent=c
     s.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+    
     local f=Instance.new("Frame")
     f.Name="MainWindow"
     f.Parent=s
     f.Size=UDim2.new(0,cfg.Size and cfg.Size[1] or 800,0,cfg.Size and cfg.Size[2] or 500)
     f.BackgroundColor3=Color3.fromRGB(30,30,35)
     f.BorderSizePixel=0
+    
     if cfg.Position=="center" then
         f.Position=UDim2.new(0.5,-f.Size.X.Offset/2,0.5,-f.Size.Y.Offset/2)
     elseif type(cfg.Position)=="table" then
@@ -103,18 +105,22 @@ function m:CreateWindow(cfg)
     else
         f.Position=UDim2.new(0.5,-f.Size.X.Offset/2,0.5,-f.Size.Y.Offset/2)
     end
+    
     local wc=Instance.new("UICorner")
     wc.CornerRadius=UDim.new(0,10)
     wc.Parent=f
+    
     local tb=Instance.new("Frame")
     tb.Name="TitleBar"
     tb.Parent=f
     tb.Size=UDim2.new(1,0,0,32)
     tb.BackgroundColor3=Color3.fromRGB(45,45,50)
     tb.BorderSizePixel=0
+    
     local tc=Instance.new("UICorner")
     tc.CornerRadius=UDim.new(0,10)
     tc.Parent=tb
+    
     local rb=Instance.new("Frame")
     rb.Name="RedButton"
     rb.Parent=tb
@@ -122,9 +128,11 @@ function m:CreateWindow(cfg)
     rb.Position=UDim2.new(0,12,0.5,-6)
     rb.BackgroundColor3=Color3.fromRGB(255,95,87)
     rb.BorderSizePixel=0
+    
     local rbc=Instance.new("UICorner")
     rbc.CornerRadius=UDim.new(0.5,0)
     rbc.Parent=rb
+    
     local yb=Instance.new("Frame")
     yb.Name="YellowButton"
     yb.Parent=tb
@@ -132,9 +140,11 @@ function m:CreateWindow(cfg)
     yb.Position=UDim2.new(0,32,0.5,-6)
     yb.BackgroundColor3=Color3.fromRGB(255,189,46)
     yb.BorderSizePixel=0
+    
     local ybc=Instance.new("UICorner")
     ybc.CornerRadius=UDim.new(0.5,0)
     ybc.Parent=yb
+    
     local gb=Instance.new("Frame")
     gb.Name="GreenButton"
     gb.Parent=tb
@@ -142,9 +152,11 @@ function m:CreateWindow(cfg)
     gb.Position=UDim2.new(0,52,0.5,-6)
     gb.BackgroundColor3=Color3.fromRGB(39,201,63)
     gb.BorderSizePixel=0
+    
     local gbc=Instance.new("UICorner")
     gbc.CornerRadius=UDim.new(0.5,0)
     gbc.Parent=gb
+    
     local tt=Instance.new("TextLabel")
     tt.Name="Title"
     tt.Parent=tb
@@ -156,18 +168,21 @@ function m:CreateWindow(cfg)
     tt.TextSize=13
     tt.Font=Enum.Font.Gotham
     tt.TextXAlignment=Enum.TextXAlignment.Center
+    
     local cf=Instance.new("Frame")
     cf.Name="Content"
     cf.Parent=f
     cf.Size=UDim2.new(1,0,1,-32)
     cf.Position=UDim2.new(0,0,0,32)
     cf.BackgroundTransparency=1
+    
     local sb=Instance.new("Frame")
     sb.Name="Sidebar"
     sb.Parent=cf
     sb.Size=UDim2.new(0.35,0,1,0)
     sb.BackgroundColor3=Color3.fromRGB(40,40,45)
     sb.BorderSizePixel=0
+    
     local d=Instance.new("Frame")
     d.Name="Divider"
     d.Parent=cf
@@ -175,6 +190,7 @@ function m:CreateWindow(cfg)
     d.Position=UDim2.new(0.35,0,0,0)
     d.BackgroundColor3=Color3.fromRGB(60,60,65)
     d.BorderSizePixel=0
+    
     local el=Instance.new("ScrollingFrame")
     el.Name="EventsList"
     el.Parent=sb
@@ -185,10 +201,12 @@ function m:CreateWindow(cfg)
     el.ScrollBarImageColor3=Color3.fromRGB(100,100,105)
     el.CanvasSize=UDim2.new(0,0,0,0)
     el.AutomaticCanvasSize=Enum.AutomaticSize.Y
+    
     local ll=Instance.new("UIListLayout")
     ll.Parent=el
     ll.Padding=UDim.new(0,1)
     ll.SortOrder=Enum.SortOrder.LayoutOrder
+    
     local cp=Instance.new("Frame")
     cp.Name="CodePanel"
     cp.Parent=cf
@@ -196,6 +214,7 @@ function m:CreateWindow(cfg)
     cp.Position=UDim2.new(0.35,1,0,0)
     cp.BackgroundColor3=Color3.fromRGB(25,25,30)
     cp.BorderSizePixel=0
+    
     local ct=Instance.new("TextLabel")
     ct.Name="CodeText"
     ct.Parent=cp
@@ -210,6 +229,7 @@ function m:CreateWindow(cfg)
     ct.TextYAlignment=Enum.TextYAlignment.Top
     ct.TextWrapped=true
     ct.RichText=true
+    
     local bp=Instance.new("Frame")
     bp.Name="ButtonPanel"
     bp.Parent=cf
@@ -217,26 +237,30 @@ function m:CreateWindow(cfg)
     bp.Position=UDim2.new(0.35,1,1,-45)
     bp.BackgroundColor3=Color3.fromRGB(35,35,40)
     bp.BorderSizePixel=0
+    
     local btl=Instance.new("UIListLayout")
     btl.Parent=bp
     btl.FillDirection=Enum.FillDirection.Horizontal
     btl.Padding=UDim.new(0,8)
     btl.SortOrder=Enum.SortOrder.LayoutOrder
     btl.VerticalAlignment=Enum.VerticalAlignment.Center
+    
     local btp=Instance.new("UIPadding")
     btp.Parent=bp
     btp.PaddingLeft=UDim.new(0,12)
     btp.PaddingRight=UDim.new(0,12)
     btp.PaddingTop=UDim.new(0,8)
     btp.PaddingBottom=UDim.new(0,8)
-    self.gui=s
-    self.window=f
-    self.titleBar=tb
-    self.titleText=tt
-    self.eventsList=el
-    self.codeText=ct
-    self.buttonPanel=bp
-    local function h(btn,hc,oc)
+    
+    window.gui=s
+    window.window=f
+    window.titleBar=tb
+    window.titleText=tt
+    window.eventsList=el
+    window.codeText=ct
+    window.buttonPanel=bp
+    
+    local function setupHover(btn,hc,oc)
         local cd=Instance.new("TextButton")
         cd.Parent=btn
         cd.Size=UDim2.new(1,0,1,0)
@@ -250,40 +274,49 @@ function m:CreateWindow(cfg)
         end)
         if btn==rb then
             cd.MouseButton1Click:Connect(function()
-                self.WindowClosed:Fire()
+                window.WindowClosed:Fire()
             end)
         end
     end
-    h(rb,Color3.fromRGB(255,115,107),Color3.fromRGB(255,95,87))
-    h(yb,Color3.fromRGB(255,199,66),Color3.fromRGB(255,189,46))
-    h(gb,Color3.fromRGB(59,211,83),Color3.fromRGB(39,201,63))
+    
+    setupHover(rb,Color3.fromRGB(255,115,107),Color3.fromRGB(255,95,87))
+    setupHover(yb,Color3.fromRGB(255,199,66),Color3.fromRGB(255,189,46))
+    setupHover(gb,Color3.fromRGB(59,211,83),Color3.fromRGB(39,201,63))
+    
     if cfg.Draggable~=false then
-        local dr,ds,sp=false,nil,nil
-        tb.InputBegan:Connect(function(i)
-            if i.UserInputType==Enum.UserInputType.MouseButton1 then
-                dr=true
-                ds=i.Position
-                sp=f.Position
+        local dragging,dragStart,startPos=false,nil,nil
+        tb.InputBegan:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 then
+                dragging=true
+                dragStart=input.Position
+                startPos=f.Position
             end
         end)
-        u.InputChanged:Connect(function(i)
-            if dr and i.UserInputType==Enum.UserInputType.MouseMovement then
-                local delta=i.Position-ds
-                f.Position=UDim2.new(sp.X.Scale,sp.X.Offset+delta.X,sp.Y.Scale,sp.Y.Offset+delta.Y)
+        u.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
+                local delta=input.Position-dragStart
+                f.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+delta.X,startPos.Y.Scale,startPos.Y.Offset+delta.Y)
             end
         end)
-        u.InputEnded:Connect(function(i)
-            if i.UserInputType==Enum.UserInputType.MouseButton1 then
-                dr=false
+        u.InputEnded:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.MouseButton1 then
+                dragging=false
             end
         end)
     end
+    
+    -- Store original size and position for animation
+    window.originalSize=f.Size
+    window.originalPosition=f.Position
+    
+    -- Start with window hidden for animation
     f.Size=UDim2.new(0,0,0,0)
     f.Position=UDim2.new(0.5,0,0.5,0)
-    return self
+    
+    return window
 end
 
-function w:CreateEventGroup(name,tp)
+function WindowClass:CreateEventGroup(name,tp)
     if self.EventGroups[name] then return self.EventGroups[name] end
     local group={
         name=name,
@@ -383,7 +416,7 @@ function w:CreateEventGroup(name,tp)
     return group
 end
 
-function w:AddEvent(n,tp,cd)
+function WindowClass:AddEvent(n,tp,cd)
     local fullKey=n.."_"..tick()
     if self.Events[fullKey] then return end
     local group=self:CreateEventGroup(n,tp)
@@ -457,7 +490,7 @@ function w:AddEvent(n,tp,cd)
     end
 end
 
-function w:RemoveEvent(n,fullKey)
+function WindowClass:RemoveEvent(n,fullKey)
     if fullKey and self.Events[fullKey] then
         local ev=self.Events[fullKey]
         local group=ev.group
@@ -486,11 +519,11 @@ function w:RemoveEvent(n,fullKey)
     end
 end
 
-function w:SetCode(cd)
+function WindowClass:SetCode(cd)
     self.codeText.Text=applySyntaxHighlighting(cd)
 end
 
-function w:AddButton(name,callback)
+function WindowClass:AddButton(name,callback)
     if self.Buttons[name] then return end
     local btn=Instance.new("TextButton")
     btn.Name=name.."Button"
@@ -526,25 +559,21 @@ function w:AddButton(name,callback)
     self.Buttons[name]=btn
 end
 
-function w:RemoveButton(name)
+function WindowClass:RemoveButton(name)
     if not self.Buttons[name] then return end
     self.Buttons[name]:Destroy()
     self.Buttons[name]=nil
 end
 
-function w:Show()
-    local originalSize=self.window.Size
-    local originalPos=self.window.Position
-    self.window.Size=UDim2.new(0,0,0,0)
-    self.window.Position=UDim2.new(0.5,0,0.5,0)
+function WindowClass:Show()
     local tw=t:Create(self.window,TweenInfo.new(0.4,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{
-        Size=originalSize,
-        Position=originalPos
+        Size=self.originalSize,
+        Position=self.originalPosition
     })
     tw:Play()
 end
 
-function w:Hide()
+function WindowClass:Hide()
     local tw=t:Create(self.window,TweenInfo.new(0.3,Enum.EasingStyle.Quart,Enum.EasingDirection.In),{
         Size=UDim2.new(0,0,0,0),
         Position=UDim2.new(0.5,0,0.5,0)
@@ -552,7 +581,7 @@ function w:Hide()
     tw:Play()
 end
 
-function w:Destroy()
+function WindowClass:Destroy()
     if self.gui then
         self.gui:Destroy()
     end
@@ -564,8 +593,8 @@ function w:Destroy()
     end
 end
 
-function w:SetTitle(title)
+function WindowClass:SetTitle(title)
     self.titleText.Text=title
 end
 
-return m
+return MacUI
