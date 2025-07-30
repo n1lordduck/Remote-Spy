@@ -78,6 +78,7 @@ local function applySyntaxHighlighting(text)
     return result
 end
 
+-- FIX: Add CreateWindow to the main module 'm'
 function m:CreateWindow(cfg)
     local self=setmetatable({},w)
     self.EventClicked=Instance.new("BindableEvent")
